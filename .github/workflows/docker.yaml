@@ -11,7 +11,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }} 
-          password: ${{ vars.DOCKERHUB_TOKEN }} 
+          password: ${{ secrets.DOCKERHUB_TOKEN }} 
       - name: Cleanup old Buildx Instances
         run: docker buildx prune -f || true
         
