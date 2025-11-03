@@ -6,34 +6,24 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v4 # Loyiha kodini yuklash
-      
-      # MUAMMO: QEMU qadami ko'pincha bu yerda Builderga kirishni buzadi. Uni qadamlarning o'rtasiga ko'chiramiz.
-
-      # 1. Docker Hub'ga Kirish
+      - uses: actions/checkout@v4       
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }} 
-          password: ${{ vars.DOCKERHUB_TOKEN }} # Variables'dan oladi
-          
-      # 2. Buildx Keshini O'chirish (Muammoni hal qilish uchun qo'shildi)
+          password: ${{ vars.DOCKERHUB_TOKEN }} 
       - name: Cleanup old Buildx Instances
         run: docker buildx prune -f || true
         
-      # 3. QEMU'ni sozlash (Login va Cleanup'dan keyin)
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         
-      # 4. Docker Buildx sozlamasi (Eng ishonchli usul)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          # Avtorizatsiya muammosini hal qilish uchun eng kuchli usul
           driver: docker-container 
           use: true
           
-      # 5. Qurish va Push qilish
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
