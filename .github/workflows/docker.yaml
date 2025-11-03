@@ -6,17 +6,35 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
+      - uses: actions/checkout@v4 # Loyiha kodini yuklash
+      
+      # 1. QEMU'ni sozlash (Bu keyinroq turishi kerak)
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        
+      # 2. Docker Buildx sozlamasi (Bu hozir Login'dan oldin keladi)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          # Buildx'ni aniq ishlashga majburlash. 
+          # Bu qadam kerakli builder image'ini tortib oladi.
+          use: true
+          
+      # 3. Docker Hub'ga Kirish (Tokenni Buildx'ga yuborish)
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ vars.DOCKERHUB_USERNAME }} 
+          password: ${{ vars.DOCKERHUB_TOKEN }} # Variables'dan oladi
+          
+      # 4. Keshni Tozalash (login'dan keyin ishlashi kerak)
+      - name: Cleanup old Buildx Instances
+        run: docker buildx prune -f || true
+        
+      # 5. Qurish va Push qilish
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          context: . 
           push: true
-          tags: shokhijakhon_dev/cicd_github_actions:latest
+          tags: shokhijakhondev/cicd_github_actions:latest
