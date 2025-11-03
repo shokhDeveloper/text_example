@@ -9,4 +9,3 @@ async function bootstrap() {
   );
 }
 void bootstrap();
-// dckr_pat_hIZq7K35T2TqL0oPmHNLdg2hZGs
