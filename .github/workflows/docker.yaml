@@ -9,18 +9,23 @@ jobs:
       - uses: actions/checkout@v4 # Loyiha kodini yuklash
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        
+      # 👇 TUZATILGAN QADAM: Yangi builder yaratish va uni ishlatish
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        
-      # 👇 TUG'RILASH: `secrets` O'RNIGA `vars` CHAQLOVI BO'LISHI KERAK
+        with:
+          driver: docker-container # Buildx-ni izolyatsiya qilingan muhitda ishga tushiradi
+          
+      # 👇 Endi bu qadam Buildx-ga ulanib ishlaydi
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }} 
-          password: ${{ vars.DOCKERHUB_TOKEN }} # 👈 YANGI CHAQRUV: Variables'dan oladi
+          password: ${{ vars.DOCKERHUB_TOKEN }} # Variables'dan oladi
           
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          context: . # Build kontekstini aniqlaymiz
           push: true
           tags: shokhijakhondev/cicd_github_actions:latest
