@@ -10,13 +10,16 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         
-      # 👇 TUZATILGAN QADAM: Yangi builder yaratish va uni ishlatish
+      # 👇 TUZATILGAN QADAM: driver va use buyruqlarini aniqlaymiz
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
-          driver: docker-container # Buildx-ni izolyatsiya qilingan muhitda ishga tushiradi
+          # Buildx-ni izolyatsiya qilingan muhitda ishga tushiradi
+          driver: docker-container 
+          # Builder-ni aktivlashtirish va ishlashga majburlash
+          # Bu, "pull access denied" xatosini hal qiladi
+          use: true
           
-      # 👇 Endi bu qadam Buildx-ga ulanib ishlaydi
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
