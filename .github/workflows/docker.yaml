@@ -7,28 +7,36 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4 # Loyiha kodini yuklash
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        
-      # 👇 TUZATILGAN QADAM: driver va use buyruqlarini aniqlaymiz
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          # Buildx-ni izolyatsiya qilingan muhitda ishga tushiradi
-          driver: docker-container 
-          # Builder-ni aktivlashtirish va ishlashga majburlash
-          # Bu, "pull access denied" xatosini hal qiladi
-          use: true
-          
+      
+      # MUAMMO: QEMU qadami ko'pincha bu yerda Builderga kirishni buzadi. Uni qadamlarning o'rtasiga ko'chiramiz.
+
+      # 1. Docker Hub'ga Kirish
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }} 
           password: ${{ vars.DOCKERHUB_TOKEN }} # Variables'dan oladi
           
+      # 2. Buildx Keshini O'chirish (Muammoni hal qilish uchun qo'shildi)
+      - name: Cleanup old Buildx Instances
+        run: docker buildx prune -f || true
+        
+      # 3. QEMU'ni sozlash (Login va Cleanup'dan keyin)
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        
+      # 4. Docker Buildx sozlamasi (Eng ishonchli usul)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          # Avtorizatsiya muammosini hal qilish uchun eng kuchli usul
+          driver: docker-container 
+          use: true
+          
+      # 5. Qurish va Push qilish
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: . # Build kontekstini aniqlaymiz
+          context: . 
           push: true
           tags: shokhijakhondev/cicd_github_actions:latest
